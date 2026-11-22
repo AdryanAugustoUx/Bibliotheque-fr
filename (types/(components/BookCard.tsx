@@ -1,5 +1,17 @@
 'use client';
-import { Book } from '../types/book';
+
+export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  cover_url: string;
+  cefr_level: CefrLevel;
+  category: string;
+  synopsis: string;
+  status: 'available' | 'borrowed';
+}
 
 interface BookCardProps {
   book: Book;
@@ -17,20 +29,28 @@ const levelColors: Record<string, string> = {
 
 export default function BookCard({ book, onSelect }: BookCardProps) {
   return (
-    <div 
+    <div
       onClick={() => onSelect(book)}
       className="group cursor-pointer flex flex-col gap-2 transition-transform duration-300 hover:-translate-y-1"
     >
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-slate-100 shadow-md">
-        <img 
-          src={book.cover_url || 'https://via.placeholder.com/300x400?text=Sem+Capa'} 
+        <img
+          src={book.cover_url || 'https://via.placeholder.com/300x400?text=Sem+Capa'}
           alt={book.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <span className={`absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded-md shadow ${levelColors[book.cefr_level] || 'bg-slate-700 text-white'}`}>
+        <span
+          className={`absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded-md shadow ${
+            levelColors[book.cefr_level] || 'bg-slate-700 text-white'
+          }`}
+        >
           {book.cefr_level}
         </span>
-        <div className={`absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-semibold rounded ${book.status === 'available' ? 'bg-green-600/90 text-white' : 'bg-red-600/90 text-white'}`}>
+        <div
+          className={`absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-semibold rounded ${
+            book.status === 'available' ? 'bg-green-600/90 text-white' : 'bg-red-600/90 text-white'
+          }`}
+        >
           {book.status === 'available' ? 'Disponível' : 'Emprestado'}
         </div>
       </div>
