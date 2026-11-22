@@ -1,8 +1,66 @@
+
 'use client';
 
 import { useState } from 'react';
-import { Book } from '../types/book';
-import BookCard from '../components/BookCard';
+
+type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  cover_url: string;
+  cefr_level: CefrLevel;
+  category: string;
+  synopsis: string;
+  status: 'available' | 'borrowed';
+}
+
+const levelColors: Record<string, string> = {
+  A1: 'bg-emerald-500 text-white',
+  A2: 'bg-teal-500 text-white',
+  B1: 'bg-amber-500 text-white',
+  B2: 'bg-orange-500 text-white',
+  C1: 'bg-rose-500 text-white',
+  C2: 'bg-purple-600 text-white',
+};
+
+function BookCard({ book, onSelect }: { book: Book; onSelect: (book: Book) => void }) {
+  return (
+    <div
+      onClick={() => onSelect(book)}
+      className="group cursor-pointer flex flex-col gap-2 transition-transform duration-300 hover:-translate-y-1"
+    >
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-slate-100 shadow-md">
+        <img
+          src={book.cover_url || 'https://via.placeholder.com/300x400?text=Sem+Capa'}
+          alt={book.title}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <span
+          className={`absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded-md shadow ${
+            levelColors[book.cefr_level] || 'bg-slate-700 text-white'
+          }`}
+        >
+          {book.cefr_level}
+        </span>
+        <div
+          className={`absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-semibold rounded ${
+            book.status === 'available' ? 'bg-green-600/90 text-white' : 'bg-red-600/90 text-white'
+          }`}
+        >
+          {book.status === 'available' ? 'Disponível' : 'Emprestado'}
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-slate-800 text-sm line-clamp-1 group-hover:text-indigo-600 transition-colors">
+          {book.title}
+        </h3>
+        <p className="text-xs text-slate-500 line-clamp-1">{book.author}</p>
+      </div>
+    </div>
+  );
+}
 
 const MOCK_BOOKS: Book[] = [
   {
@@ -44,7 +102,7 @@ const MOCK_BOOKS: Book[] = [
     category: 'Bande Dessinée',
     synopsis: 'As aventuras irônicas e divertidas dos gauleses contra o Império Romano.',
     status: 'available',
-  }
+  },
 ];
 
 export default function Home() {
@@ -53,8 +111,9 @@ export default function Home() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const filteredBooks = MOCK_BOOKS.filter((book) => {
-    const matchesSearch = book.title.toLowerCase().includes(search.toLowerCase()) || 
-                          book.author.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      book.title.toLowerCase().includes(search.toLowerCase()) ||
+      book.author.toLowerCase().includes(search.toLowerCase());
     const matchesLevel = selectedLevel === 'TODOS' || book.cefr_level === selectedLevel;
     return matchesSearch && matchesLevel;
   });
@@ -70,8 +129,8 @@ export default function Home() {
             <h1 className="text-xl font-bold text-indigo-900 tracking-tight">Bibliothèque de Français</h1>
           </div>
           <div className="w-full sm:w-80">
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Buscar por título ou autor..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -88,8 +147,8 @@ export default function Home() {
               key={level}
               onClick={() => setSelectedLevel(level)}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                selectedLevel === level 
-                  ? 'bg-indigo-600 text-white shadow-md' 
+                selectedLevel === level
+                  ? 'bg-indigo-600 text-white shadow-md'
                   : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
               }`}
             >
@@ -119,16 +178,16 @@ export default function Home() {
       {selectedBook && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button 
+            <button
               onClick={() => setSelectedBook(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold"
             >
               ✕
             </button>
             <div className="flex gap-4 mb-4">
-              <img 
-                src={selectedBook.cover_url} 
-                alt={selectedBook.title} 
+              <img
+                src={selectedBook.cover_url}
+                alt={selectedBook.title}
                 className="w-24 h-32 object-cover rounded-lg shadow"
               />
               <div>
@@ -144,7 +203,13 @@ export default function Home() {
               <p className="text-sm text-slate-600 leading-relaxed">{selectedBook.synopsis}</p>
             </div>
             <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full ${selectedBook.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  selectedBook.status === 'available'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
                 {selectedBook.status === 'available' ? 'Disponível na Estante' : 'Emprestado'}
               </span>
               <button
